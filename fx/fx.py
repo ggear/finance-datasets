@@ -86,6 +86,7 @@ for year in range(DATA_START_YEAR, datetime.datetime.now().year + 1):
                 month_df = month_df.melt('Country', var_name='Date', value_name='Rate'). \
                     pivot_table('Rate', ['Date'], 'Country', aggfunc='first'). \
                     fillna(method='ffill').fillna(method='bfill').reset_index()
+                month_df.rename(columns={"USA": "USD/AUD", "UK": "GBP/AUD"}, inplace=True)
                 month_df.index.name = None
                 month_df.columns.name = None
                 all_df = all_df.append(month_df, ignore_index=True, verify_integrity=True)
