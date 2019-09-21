@@ -7,6 +7,7 @@ import urllib2
 
 import datetime
 import pandas as pd
+from gspread_pandas import Spread
 
 DATA_DIR_XLS = 'xls'
 DATA_DIR_CSV = 'csv'
@@ -36,6 +37,8 @@ HTTP_HEADER = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11
                'Accept-Encoding': 'none',
                'Accept-Language': 'en-US,en;q=0.8',
                'Connection': 'keep-alive'}
+
+DRIVE_SHEET = "https://docs.google.com/spreadsheets/d/10mcrUb5eMn4wz5t0e98-G2uN26v7Km5tyBui2sTkCe8"
 
 if not os.path.exists(DATA_DIR_XLS):
     os.makedirs(DATA_DIR_XLS)
@@ -135,10 +138,14 @@ if datetime.datetime.now().year > 2021:
 all_df = all_df.drop_duplicates(subset='Date', keep="first")
 all_df['Date'] = pd.to_datetime(all_df['Date'])
 all_df = all_df.set_index('Date').sort_index()
+date_start = "{}/{}".format(all_df.index[0].year, str(all_df.index[0].month).zfill(2))
+date_finish = "{}/{}".format(all_df.index[-1].year, str(all_df.index[-1].month).zfill(2))
+print("{}-{} collated with rows [{}]".format(date_start, date_finish, len(all_df)))
 all_df = all_df.reindex(pd.date_range(start=all_df.index[0], end=all_df.index[-1])).fillna(method='ffill').fillna(method='bfill')
-date_start = "{}-{}".format(all_df.index[0].year, str(all_df.index[0].month).zfill(2))
-date_finish = "{}-{}".format(all_df.index[-1].year, str(all_df.index[-1].month).zfill(2))
 all_df['Date'] = all_df.index.strftime("%Y-%m-%d")
 all_df = all_df[['Source', 'Date', 'GBP/AUD', 'USD/AUD']]
-all_df.to_csv(os.path.join(DATA_DIR_CSV, "ato_fx_{}_{}.csv".format(date_start, date_finish)), index=False)
-print("{} to {} processed with rows [{}]".format(date_start, date_finish, len(all_df)))
+print("{}-{} extrapolated with rows [{}]".format(date_start, date_finish, len(all_df)))
+all_df.to_csv(os.path.join(DATA_DIR_CSV, "ato_fx_{}_{}.csv".
+                           format(date_start.replace("/", "-"), date_finish.replace("/", "-"))), index=False)
+Spread(DRIVE_SHEET).df_to_sheet(all_df, index=False, sheet='FX', start='A1', replace=True)
+print("{}-{} uploaded with rows [{}]".format(date_start, date_finish, len(all_df)))
