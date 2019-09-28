@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-# TODO: Fill in timeline gaps before append, explain ATO versus RBA differences
-
 import calendar
 import os.path
 import re
