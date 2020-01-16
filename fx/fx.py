@@ -3,8 +3,9 @@
 import calendar
 import os.path
 import re
-import urllib2
 import ssl
+import urllib2
+
 import datetime
 import pandas as pd
 from gspread_pandas import Spread
@@ -61,8 +62,8 @@ for year in range(ATO_START_YEAR, datetime.datetime.now().year + 1):
             for suffix in ATO_URL_SUFFIX:
                 url = (ATO_URL_PREFIX + suffix).format(month_string, year)
                 try:
-                    month_xls = urllib2.urlopen(urllib2.Request(url, headers=HTTP_HEADER), 
-                    	context=ssl._create_unverified_context())
+                    month_xls = urllib2.urlopen(urllib2.Request(url, headers=HTTP_HEADER),
+                                                context=ssl._create_unverified_context())
                     with open(year_month_file, 'wb') as output:
                         output.write(month_xls.read())
                     print("{}-{} downloaded [{}] from [{}]".format(year, str(month).zfill(2), 'TRUE', url))
@@ -116,7 +117,7 @@ for years in RBA_YEARS:
         url = RBA_URL.format(years)
         try:
             month_xls = urllib2.urlopen(urllib2.Request(url, headers=HTTP_HEADER),
-            	context=ssl._create_unverified_context())
+                                        context=ssl._create_unverified_context())
             with open(years_file, 'wb') as output:
                 output.write(month_xls.read())
             print("{} downloaded [{}] from [{}]".format(years, 'TRUE', url))
