@@ -15,6 +15,7 @@ DATA_DIR_CSV = 'csv'
 
 ATO_START_MONTH = 5
 ATO_START_YEAR = 2016
+ATO_FINISH_YEAR = 2020
 ATO_XLS_HEADER_ROWS = [5, 3, 2, 1, 4, 0, 6]
 ATO_URL_PREFIX = "https://www.ato.gov.au/uploadedFiles/Content/TPALS/downloads/"
 ATO_URL_SUFFIX = [
@@ -48,7 +49,7 @@ if not os.path.exists(DATA_DIR_CSV):
 
 all_df = pd.DataFrame()
 
-for year in range(ATO_START_YEAR, datetime.datetime.now().year + 1):
+for year in range(ATO_START_YEAR, ATO_FINISH_YEAR):
     for month in range(1 if year != ATO_START_YEAR else ATO_START_MONTH,
                        13 if year < datetime.datetime.now().year else datetime.datetime.now().month):
         month_string = datetime.date(2000, month, 1).strftime('%B')
